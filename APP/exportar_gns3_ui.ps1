@@ -55,13 +55,16 @@ function New-Campo($titulo, $y, $valorInicial) {
     return @{ TextBox = $txt; Boton = $btn }
 }
 
-$campoProyecto = New-Campo "Carpeta del proyecto GNS3 (donde esta el .gns3):" 15 ""
+$proyectosDefault = Join-Path $env:USERPROFILE "GNS3\projects"
+if (-not (Test-Path $proyectosDefault)) { $proyectosDefault = "" }
+
+$campoProyecto = New-Campo "Carpeta del proyecto GNS3 (donde esta el .gns3):" 15 $proyectosDefault
 $campoDestino  = New-Campo "Carpeta destino (vacio = proyecto\EXPORT):" 75 ""
 
 $campoProyecto.Boton.Add_Click({
     $dlg = New-Object System.Windows.Forms.FolderBrowserDialog
     $dlg.Description = "Elige la carpeta del proyecto GNS3"
-    $dlg.SelectedPath = $campoProyecto.TextBox.Text
+    if (Test-Path $campoProyecto.TextBox.Text) { $dlg.SelectedPath = $campoProyecto.TextBox.Text }
     if ($dlg.ShowDialog() -eq "OK") { $campoProyecto.TextBox.Text = $dlg.SelectedPath }
 })
 $campoDestino.Boton.Add_Click({

@@ -17,6 +17,11 @@ con el mismo formato estándar.
 Sale `TuProyecto.gns3project` listo para importar en otra PC con
 `File → Open portable project`.
 
+**¿Dónde está mi proyecto?** GNS3 los guarda normalmente en
+`C:\Users\TU-USUARIO\GNS3\projects\NombreDelProyecto`. Si Windows
+muestra el aviso azul de SmartScreen al abrir el .bat: "Más información
+→ Ejecutar de todas formas" (es normal con archivos descargados).
+
 ## Requisitos
 
 - Windows con PowerShell (ya viene instalado)
