@@ -18,9 +18,20 @@ Sale `TuProyecto.gns3project` listo para importar en otra PC con
 `File → Open portable project`.
 
 **¿Dónde está mi proyecto?** GNS3 los guarda normalmente en
-`C:\Users\TU-USUARIO\GNS3\projects\NombreDelProyecto`. Si Windows
-muestra el aviso azul de SmartScreen al abrir el .bat: "Más información
-→ Ejecutar de todas formas" (es normal con archivos descargados).
+`C:\Users\TU-USUARIO\GNS3\projects\NombreDelProyecto`.
+
+## Avisos antes de usar
+
+- **SmartScreen (pantalla azul)**: al abrir un .bat descargado Windows
+  puede decir "protegió tu PC". Es normal con herramientas sin firma
+  digital → clic en "Más información → Ejecutar de todas formas".
+- **0_ANTIVIRUS.bat pide administrador**: agrega la carpeta a las
+  exclusiones de Windows Defender. Si no tienes admin, salta este paso —
+  el exportador funciona igual mientras tu antivirus no lo bloquee. Solo
+  cubre Defender; con Avast/McAfee agrega la carpeta a sus exclusiones.
+- **Imágenes IOS**: para que el proyecto *corra* en la otra PC hacen
+  falta las mismas imágenes (ej. Cisco 3725). El archivo importa igual
+  y GNS3 te dice exactamente cuál falta.
 
 ## Requisitos
 

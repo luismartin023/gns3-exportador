@@ -57,6 +57,15 @@ powershell -File APP\exportar_gns3.ps1 -Proyecto "C:\ruta\del\proyecto" -Destino
 Las carpetas de VMs se omiten porque sus discos dependen de la PC local —
 no son portables ni siquiera para el exportador oficial de GNS3.
 
+## Avisos antes de usar
+
+- **SmartScreen (pantalla azul)**: al abrir un .bat descargado Windows
+  puede decir "protegió tu PC". Es normal con herramientas sin firma
+  digital → "Más información → Ejecutar de todas formas".
+- **0_ANTIVIRUS.bat pide administrador**: excluye la carpeta de Windows
+  Defender. Sin admin, salta el paso — el exportador funciona igual.
+  Solo cubre Defender; con otro antivirus agrega la carpeta a mano.
+
 ## Importar en la otra PC
 
 1. `File → Open portable project` en GNS3
