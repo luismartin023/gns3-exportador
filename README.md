@@ -1,12 +1,11 @@
 <div align="center">
 
-# Exportador GNS3 Portable
-
-**Empaqueta cualquier proyecto de GNS3 como `.gns3project` y llévalo a otra PC.**
+![LabPack](APP/banner.png)
 
 ![Windows](https://img.shields.io/badge/Windows-10%2F11-0078D6?style=flat-square&logo=windows&logoColor=white)
 ![PowerShell](https://img.shields.io/badge/PowerShell-5.1+-5391FE?style=flat-square&logo=powershell&logoColor=white)
 ![Sin instalación](https://img.shields.io/badge/Instalaci%C3%B3n-No%20requerida-1E7A3C?style=flat-square)
+![Versión](https://img.shields.io/badge/v1.0.0-release-185E30?style=flat-square)
 
 </div>
 
@@ -71,4 +70,9 @@ para el exportador oficial.
 
 ## Autor
 
-Luis Martin Peña Mejia · 2023-4341 · UCE Punta Cana
+**Luis Martin Peña Mejia** — Ingeniería de Software, UCE Punta Cana ·
+Matrícula 2023-4341 · [@luismartin023](https://github.com/luismartin023)
+
+> LabPack nació de un problema real de clase: el exportador oficial de
+> GNS3 se rinde con nodos VMware. Esta herramienta empaqueta lo que el
+> oficial no puede.

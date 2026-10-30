@@ -1,4 +1,4 @@
-# Exportador GNS3 Portable — Guía
+# LabPack — Exportador GNS3 Portable · Guía
 
 Empaqueta cualquier proyecto de GNS3 como `.gns3project` para llevarlo a
 otra PC. Arregla el problema del exportador oficial de GNS3, que falla con
