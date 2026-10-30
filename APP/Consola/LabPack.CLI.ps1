@@ -1,14 +1,14 @@
-# APP/Consola/exportar_gns3.ps1
+# APP/Consola/LabPack.CLI.ps1
 # ADAPTADOR CLI: solo parsea parametros, pinta el log y traduce el
 # resultado del dominio a codigos de salida. La logica vive en Core/.
-# Uso:  powershell -File exportar_gns3.ps1 -Proyecto "C:\ruta\proyecto" [-Destino "C:\salida"]
+# Uso:  powershell -File LabPack.CLI.ps1 -Proyecto "C:\ruta\proyecto" [-Destino "C:\salida"]
 
 param(
     [Parameter(Mandatory = $true)][string]$Proyecto,
     [string]$Destino = ""
 )
 
-. (Join-Path $PSScriptRoot "..\Core\exportar_gns3.ps1")
+. (Join-Path $PSScriptRoot "..\Core\LabPack.Core.ps1")
 
 Write-Host ""
 Write-Host "============================================" -ForegroundColor Cyan

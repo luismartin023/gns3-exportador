@@ -29,7 +29,7 @@ echo.
 set /p DESTINO=  Carpeta destino (Enter = "%PROYECTO%\EXPORT"): 
 set DESTINO=%DESTINO:"=%
 
-powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0exportar_gns3.ps1" -Proyecto "%PROYECTO%" -Destino "%DESTINO%"
+powershell -NoProfile -ExecutionPolicy Bypass -File "%~dp0LabPack.CLI.ps1" -Proyecto "%PROYECTO%" -Destino "%DESTINO%"
 
 echo.
 echo  ============================================

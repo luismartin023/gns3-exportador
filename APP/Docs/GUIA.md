@@ -8,27 +8,27 @@ proyectos que tienen VMs de VMware.
 
 ```
 EXPORTADOR_PORTABLE/
-├── 0_ANTIVIRUS.bat       ← PASO 0: ejecútalo primero (excluye la carpeta de Defender)
-├── Exportador GNS3.bat   ← el lanzador (doble clic abre la ventana)
-├── README.md
-└── APP/                  ← organizada por dominios
-    ├── Core/             ← dominio: la logica de empaquetado (una sola vez)
-    │   └── exportar_gns3.ps1   (Find-Gns3File + Export-Gns3Project)
-    ├── Interfaz/         ← adaptador UI: la ventana
-    │   ├── exportar_gns3_ui.ps1
-    │   └── exportar_gns3_ui.bat
-    ├── Consola/          ← adaptador CLI: consola con preguntas
-    │   ├── exportar_gns3.ps1
-    │   └── exportar_gns3.bat
-    ├── Recursos/         ← icono.ico, logo.png, banner.png, captura.png
-    └── Docs/             ← esta guia
+├── 0-Preparar-Antivirus.bat  ← PASO 0: ejecútalo primero (excluye la carpeta de Defender)
+├── LabPack.bat               ← el lanzador (doble clic abre la ventana)
+├── README.md · LICENSE · CHANGELOG · CONTRIBUTING · CODE_OF_CONDUCT · SECURITY
+└── APP/                      ← organizada por dominios
+    ├── Core/                 ← dominio: la logica de empaquetado (una sola vez)
+    │   └── LabPack.Core.ps1  (Find-Gns3File + Export-Gns3Project)
+    ├── Interfaz/             ← adaptador UI: la ventana
+    │   ├── LabPack.UI.ps1
+    │   └── LabPack.UI.bat
+    ├── Consola/              ← adaptador CLI: consola con preguntas
+    │   ├── LabPack.CLI.ps1
+    │   └── LabPack.CLI.bat
+    ├── Recursos/             ← labpack.ico, labpack-logo.png, labpack-banner.png, captura
+    └── Docs/                 ← esta guia
 ```
 
 ## Uso rápido
 
-0. **Primero:** doble clic en `0_ANTIVIRUS.bat` — pide admin y excluye
-   la carpeta de Windows Defender (así no revisa ni bloquea los scripts)
-1. Doble clic en `Exportador GNS3.bat` (raíz) — abre la ventana
+0. **Primero:** doble clic en `0-Preparar-Antivirus.bat` — pide admin y
+   excluye la carpeta de Windows Defender (así no revisa ni bloquea los scripts)
+1. Doble clic en `LabPack.bat` (raíz) — abre la ventana
 2. `Examinar...` → elige **la carpeta del proyecto** (donde está el `.gns3`
    y `project-files`)
 3. `Examinar...` en destino (o déjalo vacío → `tuProyecto\EXPORT`)
@@ -43,9 +43,9 @@ C:\Users\Juan\GNS3\projects\mi_lab
 ## Uso por terminal
 
 ```powershell
-powershell -File APP\Consola\exportar_gns3.ps1 -Proyecto "C:\ruta\del\proyecto"
+powershell -File APP\Consola\LabPack.CLI.ps1 -Proyecto "C:\ruta\del\proyecto"
 # con destino propio:
-powershell -File APP\Consola\exportar_gns3.ps1 -Proyecto "C:\ruta\del\proyecto" -Destino "D:\salida"
+powershell -File APP\Consola\LabPack.CLI.ps1 -Proyecto "C:\ruta\del\proyecto" -Destino "D:\salida"
 ```
 
 ## Qué empaca y qué no
@@ -67,7 +67,7 @@ no son portables ni siquiera para el exportador oficial de GNS3.
 - **SmartScreen (pantalla azul)**: al abrir un .bat descargado Windows
   puede decir "protegió tu PC". Es normal con herramientas sin firma
   digital → "Más información → Ejecutar de todas formas".
-- **0_ANTIVIRUS.bat pide administrador**: excluye la carpeta de Windows
+- **0-Preparar-Antivirus.bat pide administrador**: excluye la carpeta de Windows
   Defender. Sin admin, salta el paso — el exportador funciona igual.
   Solo cubre Defender; con otro antivirus agrega la carpeta a mano.
 
@@ -92,3 +92,9 @@ no son portables ni siquiera para el exportador oficial de GNS3.
 
 Si tu proyecto no tiene VMware y el export oficial te sirve, úsalo — este
 script hace exactamente lo mismo. Existe para cuando el oficial falla.
+
+---
+
+**LabPack** es un desarrollo de **MKZ COMPANY** — Luis Martin Peña Mejia,
+fundador y CTO. Hecho en la República Dominicana 🇩🇴
+Licencia MIT · LabPack no está afiliado ni respaldado por GNS3 Technologies.

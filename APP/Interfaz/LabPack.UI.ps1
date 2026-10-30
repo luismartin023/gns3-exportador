@@ -1,10 +1,10 @@
-# APP/Interfaz/exportar_gns3_ui.ps1 — Exportador GNS3 con ventana grafica
+# APP/Interfaz/LabPack.UI.ps1 — Exportador GNS3 con ventana grafica
 # ADAPTADOR UI: solo dibuja el formulario y pinta el log.
-# La logica de empaquetado vive en APP/Core/exportar_gns3.ps1.
+# La logica de empaquetado vive en APP/Core/LabPack.Core.ps1.
 
 param([string]$Captura = "")
 
-. (Join-Path $PSScriptRoot "..\Core\exportar_gns3.ps1")
+. (Join-Path $PSScriptRoot "..\Core\LabPack.Core.ps1")
 
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
@@ -34,7 +34,7 @@ $form.AutoScaleMode = "Dpi"
 $form.Font = New-Object System.Drawing.Font("Segoe UI", 9)
 $form.BackColor = [System.Drawing.Color]::White
 
-$iconoPath = Join-Path $PSScriptRoot "..\Recursos\icono.ico"
+$iconoPath = Join-Path $PSScriptRoot "..\Recursos\labpack.ico"
 $ico = $null
 if (Test-Path $iconoPath) {
     $ico = New-Object System.Drawing.Icon($iconoPath)

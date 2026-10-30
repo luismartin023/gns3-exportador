@@ -1,4 +1,4 @@
-# APP/Core/exportar_gns3.ps1
+# APP/Core/LabPack.Core.ps1
 # DOMINIO: empaquetado de proyectos GNS3 — logica pura, sin UI ni consola.
 # Se carga con dot-source desde los adaptadores (Interfaz/ y Consola/).
 #
