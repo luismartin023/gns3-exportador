@@ -1,8 +1,10 @@
-# exportar_gns3_ui.ps1 — Exportador GNS3 con ventana grafica
-# Doble clic en exportar_gns3_ui.bat o ejecuta este archivo.
-# Empaqueta el proyecto como .gns3project (ZIP: project.gns3 + README + project-files).
+# APP/Interfaz/exportar_gns3_ui.ps1 — Exportador GNS3 con ventana grafica
+# ADAPTADOR UI: solo dibuja el formulario y pinta el log.
+# La logica de empaquetado vive en APP/Core/exportar_gns3.ps1.
 
 param([string]$Captura = "")
+
+. (Join-Path $PSScriptRoot "..\Core\exportar_gns3.ps1")
 
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
@@ -32,7 +34,7 @@ $form.AutoScaleMode = "Dpi"
 $form.Font = New-Object System.Drawing.Font("Segoe UI", 9)
 $form.BackColor = [System.Drawing.Color]::White
 
-$iconoPath = Join-Path $PSScriptRoot "icono.ico"
+$iconoPath = Join-Path $PSScriptRoot "..\Recursos\icono.ico"
 $ico = $null
 if (Test-Path $iconoPath) {
     $ico = New-Object System.Drawing.Icon($iconoPath)
@@ -149,55 +151,25 @@ $btnExportar.FlatStyle = "Flat"
 $form.Controls.Add($btnExportar)
 
 $btnExportar.Add_Click({
-    $proyecto = $campoProyecto.TextBox.Text.Trim().Trim('"')
-    $destino  = $campoDestino.TextBox.Text.Trim().Trim('"')
     $log.Clear()
+    $resultado = Export-Gns3Project `
+        -Proyecto $campoProyecto.TextBox.Text `
+        -Destino  $campoDestino.TextBox.Text `
+        -OnLog {
+            param($msg, $tipo)
+            $estilo = if ($tipo -eq "error") { "rojo" } else { $tipo }
+            Write-Log $msg $estilo
+        }
 
-    if (-not (Test-Path $proyecto)) {
-        Write-Log "ERROR: la carpeta del proyecto no existe." "rojo"
+    if (-not $resultado.Exito) {
+        Write-Log "ERROR: $($resultado.Error)" "rojo"
         return
     }
-    $gns3 = Get-ChildItem -Path $proyecto -Filter "*.gns3" -File | Select-Object -First 1
-    if (-not $gns3) {
-        Write-Log "ERROR: no hay ningun .gns3 en esa carpeta." "rojo"
-        return
-    }
-    if ($destino -eq "") { $destino = Join-Path $proyecto "EXPORT" }
 
-    Write-Log "Proyecto: $($gns3.Name)" "ok"
-    $nombre = [IO.Path]::GetFileNameWithoutExtension($gns3.Name)
-    $staging = Join-Path $env:TEMP "gns3_export_$([guid]::NewGuid().ToString('N'))"
-    New-Item -ItemType Directory -Path "$staging\project-files" -Force | Out-Null
-
-    Copy-Item $gns3.FullName "$staging\project.gns3"
-    $readme = Join-Path $proyecto "README.txt"
-    if (Test-Path $readme) { Copy-Item $readme "$staging\README.txt" }
-
-    $pf = Join-Path $proyecto "project-files"
-    $excluir = @("vmware", "virtualbox", "docker")
-    if (Test-Path $pf) {
-        Get-ChildItem $pf -Directory | Where-Object { $excluir -notcontains $_.Name } | ForEach-Object {
-            Copy-Item $_.FullName "$staging\project-files\$($_.Name)" -Recurse
-            Write-Log "  + project-files/$($_.Name)" "ok"
-        }
-        Get-ChildItem $pf -Directory | Where-Object { $excluir -contains $_.Name } | ForEach-Object {
-            Write-Log "  - project-files/$($_.Name) omitido (no portable)" "aviso"
-        }
-    }
-
-    New-Item -ItemType Directory -Path $destino -Force | Out-Null
-    $zip = Join-Path $env:TEMP "$nombre.zip"
-    if (Test-Path $zip) { Remove-Item $zip -Force }
-    Compress-Archive -Path "$staging\*" -DestinationPath $zip
-    $salida = Join-Path $destino "$nombre.gns3project"
-    Move-Item $zip $salida -Force
-    Remove-Item $staging -Recurse -Force
-
-    $kb = [math]::Round((Get-Item $salida).Length / 1KB)
     Write-Log "" ""
-    Write-Log "LISTO: $salida ($kb KB)" "ok"
+    Write-Log "LISTO: $($resultado.Salida) ($($resultado.KB) KB)" "ok"
     [System.Windows.Forms.MessageBox]::Show(
-        "Exportado correctamente:`n$salida ($kb KB)", "Exportador GNS3",
+        "Exportado correctamente:`n$($resultado.Salida) ($($resultado.KB) KB)", "Exportador GNS3",
         "OK", "Information") | Out-Null
 })
 

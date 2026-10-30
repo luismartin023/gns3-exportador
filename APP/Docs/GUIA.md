@@ -10,13 +10,18 @@ proyectos que tienen VMs de VMware.
 EXPORTADOR_PORTABLE/
 ├── 0_ANTIVIRUS.bat       ← PASO 0: ejecútalo primero (excluye la carpeta de Defender)
 ├── Exportador GNS3.bat   ← el lanzador (doble clic abre la ventana)
-└── APP/                  ← todo lo demás: scripts, ícono, esta guía
-    ├── exportar_gns3_ui.ps1   (la ventana)
-    ├── exportar_gns3_ui.bat   (lanza la ventana desde bat)
-    ├── exportar_gns3.bat      (consola con preguntas)
-    ├── exportar_gns3.ps1      (consola / terminal)
-    ├── icono.ico
-    └── GUIA.md
+├── README.md
+└── APP/                  ← organizada por dominios
+    ├── Core/             ← dominio: la logica de empaquetado (una sola vez)
+    │   └── exportar_gns3.ps1   (Find-Gns3File + Export-Gns3Project)
+    ├── Interfaz/         ← adaptador UI: la ventana
+    │   ├── exportar_gns3_ui.ps1
+    │   └── exportar_gns3_ui.bat
+    ├── Consola/          ← adaptador CLI: consola con preguntas
+    │   ├── exportar_gns3.ps1
+    │   └── exportar_gns3.bat
+    ├── Recursos/         ← icono.ico, logo.png, banner.png, captura.png
+    └── Docs/             ← esta guia
 ```
 
 ## Uso rápido
@@ -38,9 +43,9 @@ C:\Users\Juan\GNS3\projects\mi_lab
 ## Uso por terminal
 
 ```powershell
-powershell -File APP\exportar_gns3.ps1 -Proyecto "C:\ruta\del\proyecto"
+powershell -File APP\Consola\exportar_gns3.ps1 -Proyecto "C:\ruta\del\proyecto"
 # con destino propio:
-powershell -File APP\exportar_gns3.ps1 -Proyecto "C:\ruta\del\proyecto" -Destino "D:\salida"
+powershell -File APP\Consola\exportar_gns3.ps1 -Proyecto "C:\ruta\del\proyecto" -Destino "D:\salida"
 ```
 
 ## Qué empaca y qué no

@@ -1,11 +1,11 @@
 <div align="center">
 
-![LabPack](APP/banner.png)
+![LabPack](APP/Recursos/banner.png)
 
 ![Windows](https://img.shields.io/badge/Windows-10%2F11-0078D6?style=flat-square&logo=windows&logoColor=white)
 ![PowerShell](https://img.shields.io/badge/PowerShell-5.1+-5391FE?style=flat-square&logo=powershell&logoColor=white)
 ![Sin instalación](https://img.shields.io/badge/Instalaci%C3%B3n-No%20requerida-1E7A3C?style=flat-square)
-![Versión](https://img.shields.io/badge/v1.0.0-release-185E30?style=flat-square)
+![Versión](https://img.shields.io/badge/v1.1.0-release-185E30?style=flat-square)
 
 </div>
 
@@ -15,7 +15,7 @@ un ZIP con `project.gns3` + `README.txt` + `project-files/`.
 
 <div align="center">
 
-![Captura del exportador](APP/captura.png)
+![Captura del exportador](APP/Recursos/captura.png)
 
 </div>
 
@@ -65,8 +65,17 @@ para el exportador oficial.
 ```
 ├── 0_ANTIVIRUS.bat        paso 0: exclusion de Defender
 ├── Exportador GNS3.bat    lanzador → abre la ventana
-└── APP/                   scripts, icono, captura, GUIA.md
+├── README.md
+└── APP/                   dividida por dominios
+    ├── Core/      dominio puro: la logica de empaquetado (una sola vez)
+    ├── Interfaz/  adaptador WinForms → llama al Core
+    ├── Consola/   adaptador CLI → llama al Core
+    ├── Recursos/  icono, logo, banner, captura
+    └── Docs/      GUIA.md
 ```
+
+La lógica vive solo en `Core/`; la ventana y la consola son adaptadores
+que lo consumen — no hay código duplicado entre interfaces.
 
 ## Autor
 
