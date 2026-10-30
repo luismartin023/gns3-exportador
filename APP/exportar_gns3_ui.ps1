@@ -1,0 +1,167 @@
+# exportar_gns3_ui.ps1 — Exportador GNS3 con ventana grafica
+# Doble clic en exportar_gns3_ui.bat o ejecuta este archivo.
+# Empaqueta el proyecto como .gns3project (ZIP: project.gns3 + README + project-files).
+
+Add-Type -AssemblyName System.Windows.Forms
+Add-Type -AssemblyName System.Drawing
+Add-Type -AssemblyName System.IO.Compression.FileSystem
+
+# Declarar el proceso como DPI-aware: sin esto Windows escala la ventana
+# como bitmap y todo se ve borroso en pantallas de alta densidad.
+Add-Type -TypeDefinition @"
+using System;
+using System.Runtime.InteropServices;
+public static class DpiAwareness {
+    [DllImport("user32.dll")] public static extern bool SetProcessDPIAware();
+}
+"@
+[void][DpiAwareness]::SetProcessDPIAware()
+
+[System.Windows.Forms.Application]::EnableVisualStyles()
+[System.Windows.Forms.Application]::SetCompatibleTextRenderingDefault($false)
+
+$form = New-Object System.Windows.Forms.Form
+$form.Text = "Exportador GNS3 Portable"
+$form.Size = New-Object System.Drawing.Size(560, 470)
+$form.StartPosition = "CenterScreen"
+$form.FormBorderStyle = "FixedSingle"
+$form.MaximizeBox = $false
+$form.AutoScaleMode = "Dpi"
+$form.Font = New-Object System.Drawing.Font("Segoe UI", 9)
+
+$iconoPath = Join-Path $PSScriptRoot "icono.ico"
+if (Test-Path $iconoPath) {
+    $form.Icon = New-Object System.Drawing.Icon($iconoPath)
+}
+
+function New-Campo($titulo, $y, $valorInicial) {
+    $lbl = New-Object System.Windows.Forms.Label
+    $lbl.Text = $titulo
+    $lbl.Location = New-Object System.Drawing.Point(15, $y)
+    $lbl.AutoSize = $true
+    $form.Controls.Add($lbl)
+
+    $txt = New-Object System.Windows.Forms.TextBox
+    $txt.Location = New-Object System.Drawing.Point(15, ($y + 20))
+    $txt.Size = New-Object System.Drawing.Size(430, 24)
+    $txt.Text = $valorInicial
+    $form.Controls.Add($txt)
+
+    $btn = New-Object System.Windows.Forms.Button
+    $btn.Text = "Examinar..."
+    $btn.Location = New-Object System.Drawing.Point(455, ($y + 19))
+    $btn.Size = New-Object System.Drawing.Size(80, 26)
+    $form.Controls.Add($btn)
+    return @{ TextBox = $txt; Boton = $btn }
+}
+
+$campoProyecto = New-Campo "Carpeta del proyecto GNS3 (donde esta el .gns3):" 15 ""
+$campoDestino  = New-Campo "Carpeta destino (vacio = proyecto\EXPORT):" 75 ""
+
+$campoProyecto.Boton.Add_Click({
+    $dlg = New-Object System.Windows.Forms.FolderBrowserDialog
+    $dlg.Description = "Elige la carpeta del proyecto GNS3"
+    $dlg.SelectedPath = $campoProyecto.TextBox.Text
+    if ($dlg.ShowDialog() -eq "OK") { $campoProyecto.TextBox.Text = $dlg.SelectedPath }
+})
+$campoDestino.Boton.Add_Click({
+    $dlg = New-Object System.Windows.Forms.FolderBrowserDialog
+    $dlg.Description = "Elige donde guardar el .gns3project"
+    if ($dlg.ShowDialog() -eq "OK") { $campoDestino.TextBox.Text = $dlg.SelectedPath }
+})
+
+$log = New-Object System.Windows.Forms.RichTextBox
+$log.ReadOnly = $true
+$log.ScrollBars = "Vertical"
+$log.Font = New-Object System.Drawing.Font("Consolas", 9)
+$log.Location = New-Object System.Drawing.Point(15, 160)
+$log.Size = New-Object System.Drawing.Size(520, 220)
+$log.BackColor = [System.Drawing.Color]::FromArgb(30, 30, 30)
+$log.ForeColor = [System.Drawing.Color]::FromArgb(220, 220, 220)
+$form.Controls.Add($log)
+
+function Write-Log($texto, $color = "") {
+    $log.SelectionStart = $log.TextLength
+    $log.SelectionLength = 0
+    $log.SelectionColor = switch ($color) {
+        "rojo"  { [System.Drawing.Color]::FromArgb(255, 120, 120) }
+        "aviso" { [System.Drawing.Color]::FromArgb(255, 200, 90) }
+        "ok"    { [System.Drawing.Color]::FromArgb(140, 220, 140) }
+        default { $log.ForeColor }
+    }
+    $log.AppendText("$texto`r`n")
+    $log.SelectionColor = $log.ForeColor
+    $log.ScrollToCaret()
+}
+
+$btnExportar = New-Object System.Windows.Forms.Button
+$btnExportar.Text = "EXPORTAR AHORA"
+$btnExportar.Font = New-Object System.Drawing.Font("Segoe UI", 10, [System.Drawing.FontStyle]::Bold)
+$btnExportar.Location = New-Object System.Drawing.Point(15, 120)
+$btnExportar.Size = New-Object System.Drawing.Size(520, 32)
+$btnExportar.BackColor = [System.Drawing.Color]::FromArgb(30, 122, 60)
+$btnExportar.ForeColor = [System.Drawing.Color]::White
+$btnExportar.FlatStyle = "Flat"
+$form.Controls.Add($btnExportar)
+
+$btnExportar.Add_Click({
+    $proyecto = $campoProyecto.TextBox.Text.Trim().Trim('"')
+    $destino  = $campoDestino.TextBox.Text.Trim().Trim('"')
+    $log.Clear()
+
+    if (-not (Test-Path $proyecto)) {
+        Write-Log "ERROR: la carpeta del proyecto no existe." "rojo"
+        return
+    }
+    $gns3 = Get-ChildItem -Path $proyecto -Filter "*.gns3" -File | Select-Object -First 1
+    if (-not $gns3) {
+        Write-Log "ERROR: no hay ningun .gns3 en esa carpeta." "rojo"
+        return
+    }
+    if ($destino -eq "") { $destino = Join-Path $proyecto "EXPORT" }
+
+    Write-Log "Proyecto: $($gns3.Name)" "ok"
+    $nombre = [IO.Path]::GetFileNameWithoutExtension($gns3.Name)
+    $staging = Join-Path $env:TEMP "gns3_export_$([guid]::NewGuid().ToString('N'))"
+    New-Item -ItemType Directory -Path "$staging\project-files" -Force | Out-Null
+
+    Copy-Item $gns3.FullName "$staging\project.gns3"
+    $readme = Join-Path $proyecto "README.txt"
+    if (Test-Path $readme) { Copy-Item $readme "$staging\README.txt" }
+
+    $pf = Join-Path $proyecto "project-files"
+    $excluir = @("vmware", "virtualbox", "docker")
+    if (Test-Path $pf) {
+        Get-ChildItem $pf -Directory | Where-Object { $excluir -notcontains $_.Name } | ForEach-Object {
+            Copy-Item $_.FullName "$staging\project-files\$($_.Name)" -Recurse
+            Write-Log "  + project-files/$($_.Name)" "ok"
+        }
+        Get-ChildItem $pf -Directory | Where-Object { $excluir -contains $_.Name } | ForEach-Object {
+            Write-Log "  - project-files/$($_.Name) omitido (no portable)" "aviso"
+        }
+    }
+
+    New-Item -ItemType Directory -Path $destino -Force | Out-Null
+    $zip = Join-Path $env:TEMP "$nombre.zip"
+    if (Test-Path $zip) { Remove-Item $zip -Force }
+    Compress-Archive -Path "$staging\*" -DestinationPath $zip
+    $salida = Join-Path $destino "$nombre.gns3project"
+    Move-Item $zip $salida -Force
+    Remove-Item $staging -Recurse -Force
+
+    $kb = [math]::Round((Get-Item $salida).Length / 1KB)
+    Write-Log "" ""
+    Write-Log "LISTO: $salida ($kb KB)" "ok"
+    [System.Windows.Forms.MessageBox]::Show(
+        "Exportado correctamente:`n$salida ($kb KB)", "Exportador GNS3",
+        "OK", "Information") | Out-Null
+})
+
+$lblPie = New-Object System.Windows.Forms.Label
+$lblPie.Text = "Los nodos VMware/VirtualBox no se incluyen: no son portables."
+$lblPie.Location = New-Object System.Drawing.Point(15, 395)
+$lblPie.AutoSize = $true
+$lblPie.ForeColor = [System.Drawing.Color]::Gray
+$form.Controls.Add($lblPie)
+
+[void]$form.ShowDialog()
