@@ -21,10 +21,18 @@ un ZIP con `project.gns3` + `README.txt` + `project-files/`.
 
 </div>
 
+## Descargar
+
+| Vía | Enlace | Para quién |
+|---|---|---|
+| **Release ZIP** | [LabPack-v1.2.0.zip](https://github.com/luismartin023/gns3-exportador/releases/latest) | Todos — la forma recomendada |
+| Code → Download ZIP | Este repo | Si quieres el código fuente completo |
+| **NuGet package** | [LabPack en Packages](https://github.com/users/luismartin023/packages) | `dotnet nuget` / feed `nuget.pkg.github.com/luismartin023` |
+
 ## Uso
 
 ```
-1. Code → Download ZIP → descomprime la carpeta
+1. Descarga el ZIP y descomprime la carpeta
 2. 0-Preparar-Antivirus.bat  (una sola vez — excluye la carpeta de Defender)
 3. LabPack.bat               (doble clic → abre la ventana)
 4. Elige la carpeta de tu proyecto y el destino → EXPORTAR AHORA
